@@ -207,4 +207,3 @@ def game(b,r,cnt):
 tmp = left(b,r)
 board[tmp[0][0]][tmp[0][1]] = 'B'
 board[tmp[1][0]][tmp[1][1]] = 'R'
-pprint.pprint(board)
