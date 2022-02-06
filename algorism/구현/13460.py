@@ -1,174 +1,183 @@
 import sys
-import pprint
+import copy
 
-def up(b,r):
+def up(b,r,board):
+    board[b[0]][b[1]] = '.'
+    board[r[0]][r[1]] = '.'
     if b[0] < r[0]:
         for t in range(b[0]-1,0,-1):
             if board[t][b[1]] == '.':
-                board[t][b[1]] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [t,b[1]]
             elif board[t][b[1]] == 'O':
-                return False
+                b = [t,b[1]]
+                break
             else:
                 break
+        board[b[0]][b[1]] = 'B'
         for t in range(r[0]-1,0,-1):
             if board[t][r[1]] == '.':
-                board[t][r[1]] = 'R'
-                board[r[0]][r[1]] = '.'
-            elif board[t][b[1]] == 'O':
-                return True
+                r = [t,r[1]]
+            elif board[t][r[1]] == 'O':
+                r = [t,r[1]]
+                break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
     else:
-        ch = 0
         for t in range(r[0]-1,0,-1):
             if board[t][r[1]] == '.':
-                board[t][r[1]] = 'R'
-                board[r[0]][r[1]] = '.'
-            elif board[t][b[1]] == 'O':
-                ch = 1
+                r = [t,r[1]]
+            elif board[t][r[1]] == 'O':
+                r = [t,r[1]]
                 break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
         for t in range(b[0]-1,0,-1):
             if board[t][b[1]] == '.':
-                board[t][b[1]] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [t,b[1]]
             elif board[t][b[1]] == 'O':
-                return False
+                b = [t,b[1]]
+                break
             else:
                 break
-        if ch == 1:
-            return True
-    return [b,r]
+        board[b[0]][b[1]] = 'B'
+    return board
 
-def down(b,r):
+def down(b,r,board):
+    board[b[0]][b[1]] = '.'
+    board[r[0]][r[1]] = '.'
     if b[0] > r[0]:
         for t in range(b[0]+1,n-1):
             if board[t][b[1]] == '.':
-                board[t][b[1]] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [t,b[1]]
             elif board[t][b[1]] == 'O':
-                return False
+                b = [t,b[1]]
+                break
             else:
                 break
+        board[b[0]][b[1]] = 'B'
         for t in range(r[0]+1,n-1):
             if board[t][r[1]] == '.':
-                board[t][r[1]] = 'R'
-                board[r[0]][r[1]] = '.'
-            elif board[t][b[1]] == 'O':
-                return True
+                r = [t,r[1]]
+            elif board[t][r[1]] == 'O':
+                r = [t,r[1]]
+                break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
     else:
-        ch = 0
         for t in range(r[0]+1,n-1):
             if board[t][r[1]] == '.':
-                board[t][r[1]] = 'R'
-                board[r[0]][r[1]] = '.'
-            elif board[t][b[1]] == 'O':
-                ch = 1
+                r = [t,r[1]]
+            elif board[t][r[1]] == 'O':
+                r = [t,r[1]]
                 break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
         for t in range(b[0]+1,n-1):
             if board[t][b[1]] == '.':
-                board[t][b[1]] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [t,b[1]]
             elif board[t][b[1]] == 'O':
-                return False
+                b = [t,b[1]]
+                break
             else:
                 break
-        if ch == 1:
-            return True
-    return [b,r]
+        board[b[0]][b[1]] = 'B'
+    return board
 
-def left(b,r):
+def left(b,r,board):
+    board[b[0]][b[1]] = '.'
+    board[r[0]][r[1]] = '.'
     if b[1] < r[1]:
         for t in range(b[1]-1,0,-1):
             if board[b[0]][t] == '.':
-                board[b[0]][t] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [b[0],t]
             elif board[b[0]][t] == 'O':
-                return False
+                b = [b[0],t]
+                break
             else:
                 break
+        board[b[0]][b[1]] = 'B'
         for t in range(r[1]-1,0,-1):
             if board[r[0]][t] == '.':
-                board[r[0]][t] = 'R'
-                board[r[0]][r[1]] = '.'
+                r = [r[0],t]
             elif board[r[0]][t] == 'O':
-                return True
+                r = [r[0],t]
+                break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
     else:
-        ch = 0
         for t in range(r[1]-1,0,-1):
             if board[r[0]][t] == '.':
-                board[r[0]][t] = 'R'
-                board[r[0]][r[1]] = '.'
+                r = [r[0],t]
             elif board[r[0]][t] == 'O':
-                ch = 1
+                r = [r[0],t]
                 break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
         for t in range(b[1]-1,0,-1):
             if board[b[0]][t] == '.':
-                board[b[0]][t] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [b[0],t]
             elif board[b[0]][t] == 'O':
-                return False
+                b = [b[0],t]
+                break
             else:
                 break
-        if ch == 1:
-            return True
-    return [b,r]
+        board[b[0]][b[1]] = 'B'
+    return board
 
-def right(b,r):
+def right(b,r,board):
+    board[b[0]][b[1]] = '.'
+    board[r[0]][r[1]] = '.'
     if b[1] > r[1]:
         for t in range(b[1]+1,m-1):
             if board[b[0]][t] == '.':
-                board[b[0]][t] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [b[0],t]
             elif board[b[0]][t] == 'O':
-                return False
+                b = [b[0],t]
+                break
             else:
                 break
+        board[b[0]][b[1]] = 'B'
         for t in range(r[1]+1,m-1):
             if board[r[0]][t] == '.':
-                board[r[0]][t] = 'R'
-                board[r[0]][r[1]] = '.'
+                r = [r[0],t]
             elif board[r[0]][t] == 'O':
-                return True
+                r = [r[0],t]
+                break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
     else:
-        ch = 0
         for t in range(r[1]+1,m-1):
             if board[r[0]][t] == '.':
-                board[r[0]][t] = 'R'
-                board[r[0]][r[1]] = '.'
+                r = [r[0],t]
             elif board[r[0]][t] == 'O':
-                ch = 1
+                r = [r[0],t]
                 break
             else:
                 break
+        board[r[0]][r[1]] = 'R'
         for t in range(b[1]+1,m-1):
             if board[b[0]][t] == '.':
-                board[b[0]][t] = 'B'
-                board[b[0]][b[1]] = '.'
+                b = [b[0],t]
             elif board[b[0]][t] == 'O':
-                return False
+                b = [b[0],t]
+                break
             else:
                 break
-        if ch == 1:
-            return True
-    return [b,r]
+        board[b[0]][b[1]] = 'B'
+    return board
 
 n,m = map(int,sys.stdin.readline().split())
 board = []
 b = []
 r = []
+o = []
 res = 11
 
 for t in range(n):
@@ -176,34 +185,58 @@ for t in range(n):
 
 for i in range(n):
     for j in range(m):
-        if board[i][j] == 'B':
-            b = [i,j]
-        elif board[i][j] == 'R':
-            r = [i,j]
+        if board[i][j] == 'O':
+            o = [i,j]
 
-def game(b,r,cnt):
+def game(cnt,state,arr):
     global res
     if cnt <= 10:
-        for t in range(4):
-            if t == 0:
-                tmp = up(b,r)
-            elif t == 1:
-                tmp = down(b,r)
-            elif t == 2:
-                tmp = left(b,r)
+        save = copy.deepcopy(arr)
+        for i in range(n):
+            for j in range(m):
+                if save[i][j] == 'B':
+                    b = [i,j]
+                elif save[i][j] == 'R':
+                    r = [i,j]
+        if save[o[0]][o[1]] == 'R':
+            save[o[0]][o[1]] = 'O'
+            if state == 1:
+                tmp = left(b,b,copy.deepcopy(save))
+                tmp = right(b,b,copy.deepcopy(tmp))
             else:
-                tmp = right(b,r)
-            if tmp == True:
-                res = min(res,cnt+1)
-            elif tmp == False:
-                pass
+                tmp = up(b,b,copy.deepcopy(save))
+                tmp = down(b,b,copy.deepcopy(tmp))
+            if tmp[o[0]][o[1]] == 'O':
+                res = min(res,cnt)
+        elif save[o[0]][o[1]] == 'B':
+            pass
+        else:
+            if state == 1:
+                for t in range(2):
+                    if t == 0:
+                        tmp = up(b,r,copy.deepcopy(save))
+                        if tmp[b[0]][b[1]] != save[b[0]][b[1]] or tmp[r[0]][r[1]] != save[r[0]][r[1]]:
+                            game(cnt+1,-state,tmp)
+                    else:
+                        tmp = down(b,r,copy.deepcopy(save))
+                        if tmp[b[0]][b[1]] != save[b[0]][b[1]] or tmp[r[0]][r[1]] != save[r[0]][r[1]]:
+                            game(cnt+1,-state,tmp)               
             else:
-                game(tmp[0],tmp[1],cnt+1)
-                board[b[0]][b[1]] = 'B'
-                board[r[0]][r[1]] = 'R'
-                board[tmp[0][0]][tmp[0][1]] = '.'
-                board[tmp[1][0]][tmp[1][1]] = '.'
+                for t in range(2):
+                    if t == 0:
+                        tmp = left(b,r,copy.deepcopy(save))
+                        if tmp[b[0]][b[1]] != save[b[0]][b[1]] or tmp[r[0]][r[1]] != save[r[0]][r[1]]:
+                            game(cnt+1,-state,tmp)
+                    else:
+                        tmp = right(b,r,copy.deepcopy(save))
+                        if tmp[b[0]][b[1]] != save[b[0]][b[1]] or tmp[r[0]][r[1]] != save[r[0]][r[1]]:
+                            game(cnt+1,-state,tmp)
+                    
 
-tmp = left(b,r)
-board[tmp[0][0]][tmp[0][1]] = 'B'
-board[tmp[1][0]][tmp[1][1]] = 'R'
+game(0,1,board)
+game(0,-1,board)
+
+if res <= 10:
+    print(res)
+else:
+    print(-1)
