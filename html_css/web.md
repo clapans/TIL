@@ -35,3 +35,47 @@ Hyper Link를 통해 텍스트를 이동한다.
 
 
 
+## CSS
+
+
+
+- 구조:
+  1. 선택자
+  2. 속성
+  3. 값
+
+- 선택자
+  - 기본 선택자 - 클래스(.), 아이디(#), 속성, 요소 선택자
+  - 결합자 - 자식 결합자(>), 자손 결합자, 일반 형제 결합자(~) : 그냥 뒤, 인접 형제(+): 바로 뒤
+  - Pseudo Class
+
+- 우선순위
+
+  !important > 인라인 > id > class > 속성 > pseudo-class > 요소, pseudo-element
+
+- 상속
+
+  - 부모 속성이 자식에서도 적용된다. -text 요소는 상속, block 요소는 상속 x
+
+- 크기
+
+  - em,rem : em은 상속이 가능해서 같은 em이라도 들여쓰기 위치에 따라 크기가 다름
+  - viewpoint : 사용자 창을 기준 vw,vh,vmin,vmax
+
+- box model
+
+  - content box > padding > border > margin
+  - box-sizing: border-box;
+  - border : size, style, color
+
+- display
+
+  - block, inline, inline-block, none, flex
+  - visibilty: hidden : 공간은 차지하나 안 보임
+
+- position
+
+  - relative
+  - absolute : 둥둥 떠있는 느낌, static이 아닌 부모를 기준으로 포지셔닝
+  - fixed : 위치 고정 스크롤을 해도 위치 항상 똑같
+
