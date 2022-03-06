@@ -8,40 +8,21 @@ public class Main {
     int n = sc.nextInt();
     PriorityQueue<Integer> minHeap = new PriorityQueue<>();
     PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
-    for (int i=0;i<n;i++){
+
+    for (int i=1;i<n+1;i++){
       int cur_num = sc.nextInt();
-      if (i == 0){
+      if (i % 2 == 1){
+        maxHeap.add(cur_num);
+      }else{
         minHeap.add(cur_num);
-      }else if (i == 1){
-        minHeap.add(cur_num);
-        maxHeap.add(minHeap.poll());
-      }else{
-        if (cur_num <= maxHeap.peek()){
-          maxHeap.add(cur_num);
-        }else{
-          minHeap.add(cur_num);
-        }
       }
-      if (maxHeap.size() < minHeap.size()){
-        while (maxHeap.size() < minHeap.size()){
-          maxHeap.add(minHeap.poll());
-        }
-      }else{
-        while (maxHeap.size() > minHeap.size()){
-          minHeap.add(maxHeap.poll());
-        }
+      if (i > 1){
+        int max_tmp = maxHeap.poll();
+        int min_tmp = minHeap.poll();
+        maxHeap.add(Math.min(max_tmp,min_tmp));
+        minHeap.add(Math.max(max_tmp,min_tmp));
       }
-      if (minHeap.size() < maxHeap.size()){
-        System.out.printf("%d", maxHeap.peek());
-      }else if (minHeap.size() > maxHeap.size()){
-        System.out.printf("%d", minHeap.peek());
-      }else{
-        if (minHeap.peek() < maxHeap.peek()){
-          System.out.printf("%d", minHeap.peek());
-        }else{
-          System.out.printf("%d", maxHeap.peek());
-        }
-      }
+      System.out.printf("%d", maxHeap.peek());
     }
   }
 }
