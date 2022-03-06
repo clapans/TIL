@@ -24,6 +24,10 @@ public class Main {
     int cnt = 0;
     for (int i : dock){
       int tmp = find(gate,i);
+      for (int j : gate){
+        System.out.printf("%d",j);
+      }
+      System.out.print("\n");
       if (tmp==0){
         break;
       }
@@ -31,9 +35,6 @@ public class Main {
       cnt += 1;
     }
     System.out.printf("%d",cnt);
-    for (int i : gate){
-      System.out.printf("%d",i);
-    }
   }
 }
 
