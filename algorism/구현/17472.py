@@ -41,6 +41,14 @@ def compare(x,y):
                     tmp = min(tmp,abs(i[0] - j[0]) - 1)
     return tmp
 
+def pick(x,v):
+    if x == len(able):
+            
+    else:    
+        pick(x+1,v)
+        v[able[x][1]] = able[x][2]
+        pick(x+1,v)
+
 n,m = map(int,sys.stdin.readline().split())
 arr = []
 for _ in range(n):
@@ -60,10 +68,5 @@ for i in range(len(border)-1):
     for j in range(i+1,len(border)):
         tmp = compare(border[i],border[j])
         if tmp < int(1e9):
-            able.append(tmp)
+            able.append([tmp,i,j])
 
-if able:
-    able.sort()
-    print(sum(able[:len(border)-1]))
-else:
-    print(-1)
