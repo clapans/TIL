@@ -41,13 +41,30 @@ def compare(x,y):
                     tmp = min(tmp,abs(i[0] - j[0]) - 1)
     return tmp
 
-def pick(x,v):
+def find(x,v):
+    if x != v[x]:
+        return find(v[x],v)
+    return x
+
+def union(x,y,v):
+    x = find(x,v)
+    y = find(y,v)
+    if x != y:
+        v[y] = x
+    return v
+
+def pick(x,v,tree):
+    global res
     if x == len(able):
-            
-    else:    
-        pick(x+1,v)
-        v[able[x][1]] = able[x][2]
-        pick(x+1,v)
+        for i in range(2,len(v)-1):
+            if find(i,v) != find(i-1,v):
+                break
+        else:
+            res = min(res,sum(tree))
+    else:
+        v_save = v[:]    
+        pick(x+1,v_save,tree)
+        pick(x+1,union(able[x][1],able[x][2],v),tree+[able[x][0]])
 
 n,m = map(int,sys.stdin.readline().split())
 arr = []
@@ -68,5 +85,9 @@ for i in range(len(border)-1):
     for j in range(i+1,len(border)):
         tmp = compare(border[i],border[j])
         if tmp < int(1e9):
-            able.append([tmp,i,j])
+            able.append([tmp,i+1,j+1])
 
+res = int(1e9)
+pick(0,[t for t in range(len(border)+1)],[])
+
+print(res)
