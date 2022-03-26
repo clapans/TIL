@@ -57,15 +57,16 @@ def pick(x,v,tree):
     global res
     if x == len(able):
         for i in range(2,len(v)-1):
-            print(v,tree)
             if find(i,v) != find(i-1,v):
                 break
         else:
             res = min(res,sum(tree))
     else:
-        v_save = v[:]    
-        pick(x+1,v_save,tree)
-        pick(x+1,union(able[x][1],able[x][2],v_save),tree+[able[x][0]])
+        v_save = v[:]
+        v = union(able[x][1],able[x][2],v)
+        pick(x+1,v,tree+[able[x][0]])
+        v = v_save[:]
+        pick(x+1,v,tree)
 
 n,m = map(int,sys.stdin.readline().split())
 arr = []
