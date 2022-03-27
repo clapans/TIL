@@ -15,7 +15,7 @@ public class Main{
     int[] a = find(x,parent);
     int[] b = find(y,parent);
     if (a != b){
-      a = parent[b[0]][b[1]];
+      parent[b[0]][b[1]] = a;
     }
   }
   public static void main(String[] args) {
@@ -32,13 +32,31 @@ public class Main{
       }
       arr.add(tmp);
     }
-    int [][] parent = new int[n][n];
+    int [][][] parent = new int[n][n][2];
     for (int i = 0;i < n;i++){
       for (int j = 0;j < n;j++){
-        int tmp1 = Math.abs(arr.get(i).get(j) - arr.get(i).get(j+1));
-        int tmp2 = Math.abs(arr.get(i+1).get(j) - arr.get(i).get(j));
-        if (l <= tmp1 & tmp1 <= r){
-          
+        parent[i][j][0] = i;
+        parent[i][j][1] = j;
+      }
+    }
+
+    for (int i = 0;i < n;i++){
+      for (int j = 0;j < n;j++){
+        if (j < n-1){
+          int tmp1 = Math.abs(arr.get(i).get(j) - arr.get(i).get(j+1));
+          if (l <= tmp1 & tmp1 <= r){
+            int[] x = {i,j};
+            int[] y = {i,j+1};
+            union(x,y,parent);
+          }
+        }
+        if (i < n-1){
+          int tmp2 = Math.abs(arr.get(i+1).get(j) - arr.get(i).get(j));     
+          if (l <= tmp2 & tmp2 <= r){
+            int[] x = {i,j};
+            int[] y = {i+1,j};
+            union(x,y,parent);
+          }
         }
       }
     }
