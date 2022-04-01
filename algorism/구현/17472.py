@@ -56,7 +56,7 @@ def union(x,y,v):
 def pick(x,v,tree):
     global res
     if x == len(able):
-        for i in range(2,len(v)-1):
+        for i in range(2,len(v)):
             if find(i,v) != find(i-1,v):
                 break
         else:
@@ -89,7 +89,6 @@ for i in range(len(border)-1):
         if tmp < int(1e9):
             able.append([tmp,i+1,j+1])
 
-print(able)
 res = int(1e9)
 pick(0,[t for t in range(len(border)+1)],[])
 
