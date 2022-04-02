@@ -8,6 +8,8 @@ public class Main{
   static ArrayList<Integer>[] arr;
   static Queue<Integer> queue = new LinkedList<>();
   static boolean[] visit;
+  static ArrayList<Integer> cycle = new ArrayList<>();
+
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
     n = sc.nextInt();
@@ -25,19 +27,9 @@ public class Main{
     }  
   }
 
-  static void bfs(){
-    queue.offer(1);
-    while (queue.size() >= 1){
-      int x = queue.poll();
-      for (int i:arr[x]){
-        if (!visit[i]){
-          visit[i] = true;
-          queue.offer(i);
-        }
-        else {
-          
-        }
-      }
+  static void check_cycle(int x){
+    for (int i : arr[x]){
+      
     }
   }
 }
