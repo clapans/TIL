@@ -1,32 +1,41 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+class Bishop{
+  int x,y;
+  public Bishop(int x, int y){
+    this.x = x;
+    this.y = y;
+  }
+}
+
 public class Main{
   static int n;
-  static ArrayList<int[]> able;
-  static int[] dx = {1,-1,1,-1};
-  static int[] dy = {-1,1,1,-1};
+  static int[] dx = {-1,-1};
+  static int[] dy = {1,-1};
   static int res = 0;
 
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
     n = sc.nextInt();
     int[][] arr = new int[n][n];
+    ArrayList<Bishop> able = new ArrayList<>();
     for (int i = 0; i < n; i++){
       for (int j = 0; j < n; j++){
         int tmp = sc.nextInt();
         arr[i][j] = tmp;
         if (tmp == 1){
-          able.add(new int[]{i,j});
+          able.add(new Bishop(i, j));
         }
       }
     }
-    bishop(0, arr, 0);
+    bishop(0, arr, 0, able);
+    System.out.println(res);
     sc.close();
   }
 
   static boolean check(int x, int y, int[][] arr){
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 2; i++){
       int cnt = 1;
       while(true){
         int nx = x + cnt * dx[i];
@@ -45,18 +54,19 @@ public class Main{
     return true;
   }
 
-  static void bishop(int x, int[][] arr, int cnt){
-    if (x == n){
+  static void bishop(int t, int[][] arr, int cnt, ArrayList<Bishop> able){
+    if (t == able.size()){
       res = Math.max(res,cnt);
     }
     else{
-      int[] pos = able.get(x);
-      if (check(pos[0],pos[1],arr)){
-        arr[pos[0]][pos[1]] = 2;
-        bishop(x+1, arr, cnt+1);
-        arr[pos[0]][pos[1]] = 1;
+      Bishop pos = able.get(t);
+      if (check(pos.x,pos.y,arr)){
+        arr[pos.x][pos.y] = 2;
+        bishop(t+1, arr, cnt+1, able);
+        arr[pos.x][pos.y] = 1;
+      }else{
+        bishop(t+1, arr, cnt, able);
       }
-      bishop(x+1, arr, cnt+1);
     }
   }
 }
