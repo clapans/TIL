@@ -23,24 +23,16 @@ public class Main{
     arr = new int[n][n];
     ArrayList<Bishop> black = new ArrayList<>();
     ArrayList<Bishop> white = new ArrayList<>();
-    boolean isBlack = true;
     for (int i = 0; i < n; i++){
       for (int j = 0; j < n; j++){
-        int tmp = sc.nextInt();
-        arr[i][j] = tmp;
-        if (tmp == 1){
-          if (isBlack){
+        arr[i][j] = sc.nextInt();
+        if (arr[i][j] == 1){
+          if (isBlack(i,j)){
             black.add(new Bishop(i, j));
           }
           else{
             white.add(new Bishop(i, j));
           }
-        }
-        if (isBlack){
-          isBlack = false;
-        }
-        else{
-          isBlack = true;
         }
       }
     }
@@ -51,6 +43,25 @@ public class Main{
     res += tmp_res;
     System.out.println(res);
     sc.close();
+  }
+
+  static boolean isBlack(int x, int y){
+    if (x % 2 == 0){
+      if (y % 2 == 0){
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else{
+      if (y % 2 == 0){
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
   }
 
   static boolean check(int x, int y){
