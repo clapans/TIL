@@ -24,9 +24,11 @@ public class Main{
 
   static int synergy(ArrayList<Integer> lst){
     int total = 0;
-    for (int i = 0;i < lst.size()-1; i++){
-      for (int j = i+1; j < lst.size(); j++){
-        total += arr[lst.get(i)][lst.get(j)];
+    for (int i = 0;i < lst.size(); i++){
+      for (int j = 0; j < lst.size(); j++){
+        if (i != j){
+          total += arr[lst.get(i)][lst.get(j)];
+        }
       }
     }
     return total;
