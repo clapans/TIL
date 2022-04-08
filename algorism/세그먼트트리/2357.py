@@ -13,7 +13,6 @@ def max_tree(s,e,ix):
     if max_seg[ix]:
         return max_seg[ix]
     if s == e:
-        max_seg[ix] = num[s]
         return max_seg[ix]
     mid = (s+e)//2
     max_seg[ix] = max(max_tree(s,mid,ix*2),max_tree(mid+1,e,ix*2+1))
