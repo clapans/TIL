@@ -1,6 +1,5 @@
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Scanner;
 
@@ -51,7 +50,7 @@ public class Main {
   static boolean bfs(){
     Queue<Node> queue = new LinkedList<>();
     queue.offer(new Node(shark[0],shark[1],0));
-    PriorityQueue<int[]> heap = new PriorityQueue<>((o1,o2) -> o1[0]-o2[0]);
+    int[] eat = {(int)1e9,(int)1e9};
     int limit = (int)1e9;
     for (boolean[] i : visit){
       Arrays.fill(i, false);
@@ -67,7 +66,12 @@ public class Main {
             queue.offer(new Node(nx,ny,tmp.cnt+1));
             visit[nx][ny] = true;
             if (arr[nx][ny] != 0 && arr[nx][ny] < shark_size && tmp.cnt < limit){
-              heap.offer(new int[] {nx,ny});
+              if (nx <eat[0]){
+                eat = new int[] {nx,ny};
+              }
+              else if (nx == eat[0] && ny < eat[1]){
+                eat = new int[] {nx,ny};
+              }
               limit = tmp.cnt + 1;
             }
           }
@@ -75,11 +79,10 @@ public class Main {
       }
     }
 
-    if (heap.size() > 0){
-      int[] new_pos = heap.peek();
-      shark[0] = new_pos[0];
-      shark[1] = new_pos[1];
-      arr[new_pos[0]][new_pos[1]] = 0;
+    if (eat[0] != (int)1e9 && eat[1] != (int)1e9){
+      shark[0] = eat[0];
+      shark[1] = eat[1];
+      arr[eat[0]][eat[1]] = 0;
       cnt += 1;
       time_cnt += limit;
       if (cnt == shark_size){
@@ -88,8 +91,6 @@ public class Main {
       }
       return false;
     }
-    else{
-      return true;
-    }
+    return true;
   }
 }
