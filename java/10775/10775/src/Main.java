@@ -35,6 +35,7 @@ public class Main {
       cnt += 1;
     }
     System.out.printf("%d",cnt);
+    sc.close();
   }
 }
 
