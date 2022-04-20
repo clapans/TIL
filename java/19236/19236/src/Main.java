@@ -28,13 +28,10 @@ public class Main{
       }
     }
     res += arr[0][0];
-    shark.pos = new int[] {0,0};
-    shark.dir = num_arr[arr[0][0]].dir;
+    shark = new Fish(new int[] {0,0}, num_arr[arr[0][0]].dir);
     remove(0,0);
-    for (int i = 0; i < 16; i++){
-      move(num_arr[i]);
-    }
-    
+    dfs(shark,0);
+    System.out.println(res);
     sc.close();
   }
 
@@ -76,7 +73,32 @@ public class Main{
     return lst;
   }
 
-  static void dfs(Fish shark){
-    
+  static void dfs(Fish shark, int part_sum){
+    ArrayList<Fish> fishes = new ArrayList<>();
+    Fish[] move_save = new Fish[16]; 
+    for (int i = 0; i < 16; i++){
+        move_save[i] = new Fish(num_arr[i].pos, num_arr[i].dir);
+    }
+    for (int i = 0; i < 16; i++){
+      if (num_arr[i].dir != -1){
+        move(num_arr[i]);
+      }
+    }
+    fishes = find_fish(shark.pos, shark.dir);
+    if (!fishes.isEmpty()){
+      for (Fish fish : fishes){
+        part_sum += arr[fish.pos[0]][fish.pos[1]];
+        remove(fish.pos[0],fish.pos[1]);
+        dfs(fish,part_sum);
+        num_arr[arr[fish.pos[0]][fish.pos[1]]] = new Fish(shark.pos, shark.dir);
+        part_sum -= arr[fish.pos[0]][fish.pos[1]];
+      }
+      for (int i = 0;i < 16; i++){
+        num_arr[i] = new Fish(move_save[i].pos, move_save[i].dir);
+      }
+    }
+    else{
+      res = Math.max(res,part_sum);
+    }
   }
 }
