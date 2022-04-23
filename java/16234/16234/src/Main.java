@@ -79,6 +79,7 @@ public class Main{
             visit[nx][ny] = true;
             queue.add(new Node(nx,ny));
             union.add(new Node(nx,ny));
+            Node(nx,ny);
             sum += arr[nx][ny];
           }
         }
