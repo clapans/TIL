@@ -28,7 +28,7 @@ public class Main{
   public static void main(String[] args) {
     Node node = new Node(1,2);
     Node other = node;
-    System.out.println(node.equals(other));
+    System.out.println(node);
     /*node.draw();
     Node_parent node_parent = new Node_parent();
     node_parent.draw();*/
