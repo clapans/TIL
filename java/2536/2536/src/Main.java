@@ -83,7 +83,7 @@ public class Main {
           Node start = buses[i][0];
           Node end = buses[i][1];
           if (start.x == end.x){
-            
+            start.x;
           }
         }
       }
