@@ -6,6 +6,7 @@ class Node{
   }
 
   public String toString(){
+    System.out.print(x);
     if (x % 2 == 0){
       return super.toString();
     }
