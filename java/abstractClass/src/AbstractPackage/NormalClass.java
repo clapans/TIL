@@ -1,6 +1,8 @@
 package AbstractPackage;
 
-class Unit{}
+class Unit{
+    void move(){};
+}
 
 class marine extends Unit{
     void move(){};
