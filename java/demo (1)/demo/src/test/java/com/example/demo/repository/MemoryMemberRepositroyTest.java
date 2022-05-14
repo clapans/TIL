@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MemoryMemberRepositroyTest {
     MemoryMemberRepository repository = new MemoryMemberRepository();
