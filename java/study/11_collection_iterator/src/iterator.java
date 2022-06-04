@@ -9,12 +9,12 @@ public class iterator {
         map.put(2,"바나나");
         map.put(3,"포도");*/
 
-        Iterator it = c.iterator();
+        //Iterator it = c.iterator();
         //ListIterator it = c.listIterator();
         //Iterator it = map.entrySet().iterator();
         //it.next();
         //it.remove();
-        while (it.hasNext()) System.out.println(it.next());
+        //while (it.hasNext()) System.out.println(it.next());
         //while (it.hasPrevious()) System.out.println(it.previous());
 
     }

@@ -1,32 +1,33 @@
+package iter;
+
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.ListIterator;
 
-class mylist extends ArrayList implements ListIterator {
+public class customList extends ArrayList implements Iterator{
     int cursor = 0;
     int lastRet = -1;
 
-    public mylist(int initialCapacity) {
+    public customList(int initialCapacity) {
         super(initialCapacity);
     }
 
 
-    public mylist() {
+    public customList() {
         this(10);
     }
 
-    @Override
     public String toString() {
         String tmp = "";
-        ListIterator it = listIterator();
+        Iterator it = iterator();
 
         for (int i=0; it.hasNext(); i++){
             if(i!=0) tmp += ", ";
             tmp += it.next();
         }
+        return "[" + tmp + "]";
     }
 
-    public ListIterator listIterator(){
+    public Iterator iterator(){
         cursor = 0;
         lastRet = -1;
         return this;
@@ -50,10 +51,5 @@ class mylist extends ArrayList implements ListIterator {
             cursor--;
             lastRet = -1;
         }
-
     }
-}
-
-public class myList {
-
 }
