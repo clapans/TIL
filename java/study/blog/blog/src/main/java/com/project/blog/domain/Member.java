@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -30,8 +30,8 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @ColumnDefault("'user'")
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @CreationTimestamp
     private Timestamp createDate;
