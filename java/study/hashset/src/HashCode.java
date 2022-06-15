@@ -18,7 +18,7 @@ class Person{
                 ", age=" + age +
                 '}';
     }
-    /*
+
     public boolean equals(Object object){
         if (object instanceof Person){
             Person tmp = (Person) object;
@@ -29,7 +29,7 @@ class Person{
 
     public int hashCode(){
         return Objects.hash(name, age);
-    }*/
+    }
 }
 
 public class HashCode {
