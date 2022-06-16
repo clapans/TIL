@@ -52,6 +52,15 @@ public class MemberController {
     public List<Member> pageList(@PageableDefault(size = 1,sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
         return memberRepository.findAll(pageable).getContent();
     }
+    @DeleteMapping("/dummy/user/{id}")
+    public String delete(@PathVariable int id){
+        try{
+            memberRepository.deleteById(id);
+        }catch (IllegalArgumentException e){
+            return "삭제 실패";
+        }
+        return "삭제 완료";
+    }
 
     @Transactional
     @PutMapping("/dummy/user/{id}")
