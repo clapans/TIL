@@ -19,7 +19,6 @@ let index = {
             contentType: "application/json; charset=utf-8",
             dataType: "json"
         }).done(function(res){
-            alert(res.status.)
             alert("회원가입이 완료됐습니다.")
             location.href = "/blog"
         }).fail(function(err){
