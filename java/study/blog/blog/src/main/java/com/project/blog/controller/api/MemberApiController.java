@@ -26,4 +26,10 @@ public class MemberApiController {
         memberService.join(member);
         return new ResponseDto<Integer>(HttpStatus.OK, 1);
     }
+
+    @PostMapping("/api/member/login")
+    public ResponseDto<Integer> memberlogin(@RequestBody Member member){
+        memberService.login(member);
+        return new ResponseDto<Integer>(HttpStatus.OK, 1);
+    }
 }

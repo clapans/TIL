@@ -5,6 +5,9 @@ import com.project.blog.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
+import java.util.function.Supplier;
+
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
@@ -14,13 +17,22 @@ public class MemberService {
     }
 
     @Transactional
-    public int join(Member member){
+    public void join(Member member){
         try{
             memberRepository.save(member);
-            return 1;
         }catch(Exception e){
-            System.out.println("에러가 발생했습니다.");
+            throw new IllegalArgumentException("이미 사용자가 있는 아이디입니다.");
         }
-        return -1;
+    }
+
+    @Transactional(readOnly = true)
+    public void login(Member member, HttpSession session){
+        Member principal = memberRepository.findByUsernameAndPassword(member.getUsername(), member.getPassword()).orElseThrow(new Supplier<IllegalArgumentException>() {
+            @Override
+            public IllegalArgumentException get() {
+                return new IllegalArgumentException("일치하는 아이디 혹은 비밀번호가 없습니다.");
+            }
+        });
+        session.setAttribute("principal",principal);
     }
 }
