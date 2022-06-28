@@ -1,7 +1,9 @@
 package AbstractPackage;
 
+@Test(count = 1, names = {"박수근","조항주"})
 public class Abstract {
     public static void main(String[] args) {
+        /*
         Unit[] units = new Unit[3];
         units[0] = new marine();
         units[1] = new tank();
@@ -18,7 +20,7 @@ public class Abstract {
 
         for (int i = 0; i < 3; i++){
             units[i].move();
-        }
+        }*/
     }
 }
 
