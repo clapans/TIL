@@ -2,12 +2,10 @@ let index = {
     init: function(){
         $("#btn-save").on("click", ()=> {
             this.save()
-        })
-    },
-    init_login: function(){
+        }),
         $("#btn-login").on("click", ()=> {
             this.login()
-        })
+        }),
     },
 
     save: function(){
@@ -61,4 +59,3 @@ let index = {
 }
 
 index.init()
-index.init_login()

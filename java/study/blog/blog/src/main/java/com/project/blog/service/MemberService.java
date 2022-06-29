@@ -27,13 +27,12 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public void login(Member member, HttpSession session){
-        Member principal = memberRepository.findByUsernameAndPassword(member.getUsername(), member.getPassword()).orElseThrow(new Supplier<IllegalArgumentException>() {
+    public Member login(Member member){
+        return memberRepository.findByUsernameAndPassword(member.getUsername(), member.getPassword()).orElseThrow(new Supplier<IllegalArgumentException>() {
             @Override
             public IllegalArgumentException get() {
                 return new IllegalArgumentException("일치하는 아이디 혹은 비밀번호가 없습니다.");
             }
         });
-        session.setAttribute("principal",principal);
     }
 }

@@ -20,5 +20,8 @@ public class MemberControllerThyme {
         return "Member/JoinForm";
     }
 
-
+    @GetMapping("/member/logout")
+    public String logout(){
+        return "redirect:/member";
+    }
 }
