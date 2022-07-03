@@ -5,7 +5,7 @@ let index = {
         }),
         $("#btn-login").on("click", ()=> {
             this.login()
-        }),
+        })
     },
 
     save: function(){
@@ -41,7 +41,7 @@ let index = {
 
             $.ajax({
                 type: "POST",
-                url: "/blog/api/member/login",
+                url: "/login",
                 data: JSON.stringify(data),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"

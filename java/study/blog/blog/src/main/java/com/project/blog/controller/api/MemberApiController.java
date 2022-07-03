@@ -33,6 +33,7 @@ public class MemberApiController {
         return new ResponseDto<Integer>(HttpStatus.OK, 1);
     }
 
+    /*
     @PostMapping("/api/member/login")
     public ResponseDto<Integer> memberlogin(@RequestBody Member member){
         Member principal = memberService.login(member);
@@ -41,5 +42,5 @@ public class MemberApiController {
             httpSession.setAttribute("principal", principal);
 
         return new ResponseDto<Integer>(HttpStatus.OK, 1);
-    }
+    }*/
 }
