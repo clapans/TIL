@@ -2,7 +2,7 @@
 
 
 
-#### Option\<T> 란?
+#### Optional\<T> 란?
 
 
 
@@ -80,7 +80,7 @@ ifPresent: 람다식을 매개변수로 받아서 값이 있으면 람다식을 
 
 
 
-기본형을 값으로 하는 Optional###
+기본형을 값으로 하는 Optional
 
 
 
