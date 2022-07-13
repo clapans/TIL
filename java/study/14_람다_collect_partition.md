@@ -38,5 +38,5 @@ stream에 대하여 람다함수에 대한 기준으로 그룹화를 한다.
 
 
 
-1. toCollection : 매개변수로 new 메서드를 받아 collection의 한 타입으로 반환
-2. groupingBy : groupingBy 안에 groupingBy를 사용할 수 있다.
+1. toCollection() : 매개변수로 new 메서드를 받아 collection의 한 타입으로 반환
+2. groupingBy() : groupingBy 안에 groupingBy를 사용할 수 있다.
