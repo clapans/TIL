@@ -2,44 +2,59 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta http-equiv="expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <script src="webjars/jquery/dist/jquery.min.js"></script>
-    <script src="webjars/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="webjars/ekko-lightbox/dist/ekko-lightbox.min.js"></script>
-    <script src="/webjars/webrtc-adapter/release/adapter.js"></script>
-    <script src="webjars/demo-console/index.js"></script>
-
-    <script src="js/kurento-utils.js"></script>
-    <script src="js/main.js"></script>
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Spring Boot WebSocket Chat Application</title>
+    <link rel="stylesheet" href="/css/main.css" />
 </head>
 <body>
-<div class="container">
-    <div class="row">
-        <div class="col-md-5">
-            <div class="row">
-                <div class="col-md-12">
-                    <a id="presenter" href="#" class="btn btn-success"><span
-                            class="glyphicon glyphicon-play"></span> Presenter </a> <a
-                        id="viewer" href="#" class="btn btn-primary"><span
-                        class="glyphicon glyphicon-user"></span> Viewer</a> <a id="stop"
-                                                                               href="#" class="btn btn-danger"><span
-                        class="glyphicon glyphicon-stop"></span> Stop</a>
+
+<div id="username-page">
+    <div class="username-page-container">
+        <h1 class="title">username을 입력하세요</h1>
+        <form id="usernameForm" name="usernameForm">
+            <div class="form-group">
+                <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="accent username-submit">채팅 시작하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="chat-page" class="hidden">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Spring WebSocket Chat Demo</h2>
+        </div>
+        <div class="connecting">
+            연결중...
+        </div>
+        <ul id="messageArea">
+
+        </ul>
+        <form id="messageForm" name="messageForm">
+            <div class="form-group">
+                <div class="input-group clearfix">
+                    <input type="text" id="message" placeholder="Type a message..." autocomplete="off" class="form-control"/>
+                    <button type="submit" class="primary">보내기</button>
                 </div>
             </div>
-            <br>
-        </div>
+        </form>
         <div class="col-md-7">
             <div id="videoBig">
-                <video id="video" autoplay width="640px" height="480px"
-                ></video>
+                <video id="videoOutput" autoplay width="640px" height="480px"
+                       ></video>
+            </div>
+            <div id="videoSmall">
+                <video id="videoInput" autoplay width="240px" height="180px"
+                       ></video>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

@@ -1,198 +1,252 @@
-var ws = new WebSocket('wss://' + location.host + '/call');
-var video;
-var webRtcPeer;
+'use strict';
 
-window.onload = function() {
-	console = new Console();
-	video = document.getElementById('video');
-	disableStopButton();
+var usernamePage = document.querySelector('#username-page');
+var chatPage = document.querySelector('#chat-page');
+var usernameForm = document.querySelector('#usernameForm');
+var messageForm = document.querySelector('#messageForm');
+var messageInput = document.querySelector('#message');
+var messageArea = document.querySelector('#messageArea');
+var connectingElement = document.querySelector('.connecting');
+var candidate = null;
+var stompClient = null;
+var username = null;
+
+var videoInput = document.getElementById('videoInput');
+var videoOutput = document.getElementById('videoOutput');
+
+
+var colors = [
+    '#2196F3', '#32c787', '#00BCD4', '#ff5652',
+    '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
+];
+
+var configuration = null;
+var peerConnection = new RTCPeerConnection(configuration);
+
+var dataChannel = peerConnection.createDataChannel("dataChannel", { reliable: true });
+
+dataChannel.onerror = function(error) {
+    console.log("Error:", error);
+};
+dataChannel.onclose = function() {
+    console.log("Data channel is closed");
+};
+
+function connect(event) {
+    username = document.querySelector('#name').value.trim();
+
+    if(username) {
+        usernamePage.classList.add('hidden');
+        chatPage.classList.remove('hidden');
+
+        var socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, onConnected, onError);
+    }
+    event.preventDefault();
 }
 
-window.onbeforeunload = function() {
-	ws.close();
+
+function onConnected() {
+    // Subscribe to the Public Topic
+    stompClient.subscribe('/topic/public', onMessageReceived);
+
+    // Tell your username to the server
+    stompClient.send("/app/chat.addUser",
+        {},
+        JSON.stringify({sender: username, type: 'JOIN'})
+    )
+
+    peerConnection.createOffer(function(offer) {
+        peerConnection.setLocalDescription(new RTCSessionDescription({
+                    sdp : offer.sdp,
+                    type : offer.type
+                }));
+        stompClient.send("/topic/public",
+        {},
+        JSON.stringify({
+            event : "offer",
+            data : offer,
+            sender : username
+        }));
+
+        peerConnection.setLocalDescription(offer);
+
+    }, function(error) {
+        // Handle error here
+    });
+
+    peerConnection.onicecandidate = function(event) {
+        if (event.candidate) {
+            stompClient.send("/topic/public",
+            {},
+            JSON.stringify({
+                event : "candidate",
+                data : event.candidate,
+                sender : username
+            }));
+        }
+    };
+
+    connectingElement.classList.add('hidden');
+
 }
 
-ws.onmessage = function(message) {
-	var parsedMessage = JSON.parse(message.data);
-
-	switch (parsedMessage.id) {
-	case 'presenterResponse':
-		presenterResponse(parsedMessage);
-		break;
-	case 'viewerResponse':
-		viewerResponse(parsedMessage);
-		break;
-	case 'iceCandidate':
-		webRtcPeer.addIceCandidate(parsedMessage.candidate, function(error) {
-			if (error)
-				return console.error('Error adding candidate: ' + error);
-		});
-		break;
-	case 'stopCommunication':
-		dispose();
-		break;
-	default:
-		console.error('Unrecognized message', parsedMessage);
-	}
+function onError(error) {
+    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
+    connectingElement.style.color = 'red';
 }
 
-function presenterResponse(message) {
-	if (message.response != 'accepted') {
-		var errorMsg = message.message ? message.message : 'Unknow error';
-		dispose();
-	} else {
-		webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
-			if (error)
-				return console.error(error);
-		});
-	}
+
+function sendMessage(event) {
+    var messageContent = messageInput.value.trim();
+    if(messageContent && stompClient) {
+        /*
+        var chatMessage = {
+            sender: username,
+            content: messageInput.value,
+            type: 'CHAT'
+        };
+        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));*/
+        dataChannel.send(messageContent);
+        messageInput.value = '';
+    }
+    event.preventDefault();
 }
 
-function viewerResponse(message) {
-	if (message.response != 'accepted') {
-		var errorMsg = message.message ? message.message : 'Unknow error';
-		dispose();
-	} else {
-		webRtcPeer.processAnswer(message.sdpAnswer, function(error) {
-			if (error)
-				return console.error(error);
-		});
-	}
+
+function onMessageReceived(payload) {
+    var message = JSON.parse(payload.body);
+    if(message.type === 'JOIN') {
+        var messageElement = document.createElement('li');
+        messageElement.classList.add('event-message');
+        message.content = message.sender + ' joined!';
+    } else if (message.type === 'LEAVE') {
+        var messageElement = document.createElement('li');
+        messageElement.classList.add('event-message');
+        message.content = message.sender + ' left!';
+    } else if (message.event === 'offer') {
+        if (message.sender != username){
+            peerConnection.setRemoteDescription(new RTCSessionDescription({
+                sdp : message.data.sdp,
+                type : message.data.type
+            }));
+            peerConnection.createAnswer(function(answer) {
+                peerConnection.setLocalDescription({
+                    sdp : answer.sdp,
+                    type : answer.type
+                    });
+                stompClient.send('/topic/public',
+                {},
+                JSON.stringify({
+                    event : "answer",
+                    data : answer,
+                    sender : username
+                }));
+            }, function(error) {
+                // Handle error here
+            });
+
+            peerConnection.onicecandidate = function(event) {
+                if (event.candidate) {
+                    stompClient.send("/topic/public",
+                    {},
+                    JSON.stringify({
+                        event : "candidate",
+                        data : event.candidate,
+                        sender : username
+                    }));
+                }
+            };
+        }
+
+    } else if (message.event === 'candidate') {
+        if (message.sender != username){
+            peerConnection.addIceCandidate({
+                candidate : message.data.candidate,
+                sdpMid : message.data.sdpMid,
+                sdpMLineIndex : message.data.sdpMLineIndex
+            })
+        }
+    } else if (message.event === 'answer') {
+        console.log(message.data)
+        peerConnection.setRemoteDescription(new RTCSessionDescription({
+            sdp : message.data.sdp,
+            type : message.data.type
+            }));
+    } else {
+        var messageElement = document.createElement('li');
+        messageElement.classList.add('chat-message');
+
+        var avatarElement = document.createElement('i');
+        var avatarText = document.createTextNode(message.sender[0]);
+        avatarElement.appendChild(avatarText);
+        avatarElement.style['background-color'] = getAvatarColor(message.sender);
+
+        messageElement.appendChild(avatarElement);
+
+        var usernameElement = document.createElement('span');
+        var usernameText = document.createTextNode(message.sender);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
+    }
+
+    if (message.content != null){
+        var textElement = document.createElement('p');
+        var messageText = document.createTextNode(message.content);
+        textElement.appendChild(messageText);
+
+        messageElement.appendChild(textElement);
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
 }
 
-function presenter() {
-	if (!webRtcPeer) {
-		showSpinner(video);
-
-		var options = {
-			localVideo : video,
-			onicecandidate : onIceCandidate
-		}
-		webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
-				function(error) {
-					if (error) {
-						return console.error(error);
-					}
-					webRtcPeer.generateOffer(onOfferPresenter);
-				});
-
-		enableStopButton();
-	}
+function getAvatarColor(messageSender) {
+    var hash = 0;
+    for (var i = 0; i < messageSender.length; i++) {
+        hash = 31 * hash + messageSender.charCodeAt(i);
+    }
+    var index = Math.abs(hash % colors.length);
+    return colors[index];
 }
+peerConnection.ondatachannel = function (event) {
+    dataChannel = event.channel;
+};
 
-function onOfferPresenter(error, offerSdp) {
-	if (error)
-		return console.error('Error generating the offer');
-	var message = {
-		id : 'presenter',
-		sdpOffer : offerSdp
-	}
-	sendMessage(message);
-}
+dataChannel.onmessage = function(event) {
+    console.log("Message:", event.data);
+};
 
-function viewer() {
-	if (!webRtcPeer) {
-		showSpinner(video);
-
-		var options = {
-			remoteVideo : video,
-			onicecandidate : onIceCandidate
-		}
-		webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
-				function(error) {
-					if (error) {
-						return console.error(error);
-					}
-					this.generateOffer(onOfferViewer);
-				});
-
-		enableStopButton();
-	}
-}
-
-function onOfferViewer(error, offerSdp) {
-	if (error)
-		return console.error('Error generating the offer');
-	var message = {
-		id : 'viewer',
-		sdpOffer : offerSdp
-	}
-	sendMessage(message);
-}
-
-function onIceCandidate(candidate) {
-
-	var message = {
-		id : 'onIceCandidate',
-		candidate : candidate
-	};
-	sendMessage(message);
-}
-
-function stop() {
-	var message = {
-		id : 'stop'
-	}
-	sendMessage(message);
-	dispose();
-}
-
-function dispose() {
-	if (webRtcPeer) {
-		webRtcPeer.dispose();
-		webRtcPeer = null;
-	}
-	hideSpinner(video);
-
-	disableStopButton();
-}
-
-function disableStopButton() {
-	enableButton('#presenter', 'presenter()');
-	enableButton('#viewer', 'viewer()');
-	disableButton('#stop');
-}
-
-function enableStopButton() {
-	disableButton('#presenter');
-	disableButton('#viewer');
-	enableButton('#stop', 'stop()');
-}
-
-function disableButton(id) {
-	$(id).attr('disabled', true);
-	$(id).removeAttr('onclick');
-}
-
-function enableButton(id, functionName) {
-	$(id).attr('disabled', false);
-	$(id).attr('onclick', functionName);
-}
-
-function sendMessage(message) {
-	var jsonMessage = JSON.stringify(message);
-	ws.send(jsonMessage);
-}
-
-function showSpinner() {
-	for (var i = 0; i < arguments.length; i++) {
-		arguments[i].poster = './img/transparent-1px.png';
-		arguments[i].style.background = 'center transparent url("./img/spinner.gif") no-repeat';
-	}
-}
-
-function hideSpinner() {
-	for (var i = 0; i < arguments.length; i++) {
-		arguments[i].src = '';
-		arguments[i].poster = './img/webrtc.png';
-		arguments[i].style.background = '';
-	}
-}
-
-/**
- * Lightbox utility (to display media pipeline image in a modal dialog)
- */
-$(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
-	event.preventDefault();
-	$(this).ekkoLightbox();
+peerConnection.addEventListener('connectionstatechange', event => {
+    if (peerConnection.connectionState === 'connected') {
+        console.log("Peers connected!")
+    }
 });
+
+var constraints = {
+    video : {
+        frameRate : {
+            ideal : 10,
+            max : 15
+        },
+        width : 1280,
+        height : 720,
+        facingMode : "user"
+    }
+};
+navigator.mediaDevices.getUserMedia(constraints).
+then(function(stream) {
+    peerConnection.addStream(stream);
+    videoInput.srcObject = stream;
+}).catch(function(err) { /* handle the error */ });
+
+
+peerConnection.onaddstream = function(event) {
+    videoOutput.srcObject = event.stream;
+};
+
+usernameForm.addEventListener('submit', connect, true)
+messageForm.addEventListener('submit', sendMessage, true)
