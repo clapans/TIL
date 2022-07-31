@@ -6,7 +6,6 @@ var usernameForm = document.querySelector('#usernameForm');
 var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
-var connectingElement = document.querySelector('.connecting');
 var candidate = null;
 var stompClient = null;
 var username = null;
@@ -94,30 +93,37 @@ function onConnected() {
 }
 
 function onError(error) {
-    connectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
-    connectingElement.style.color = 'red';
+    console.log('Could not connect to WebSocket server. Please refresh this page to try again!');
 }
-
 
 function sendMessage(event) {
     var messageContent = messageInput.value.trim();
     if(messageContent && stompClient) {
-        /*
-        var chatMessage = {
-            sender: username,
-            content: messageInput.value,
-            type: 'CHAT'
-        };
-        stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));*/
         dataChannel.send(JSON.stringify({
             "username" : username,
             "message" : messageContent
         }))
+
+        var messageElement = document.createElement('li');
+        messageElement.classList.add('chat-message');
+
+        var usernameElement = document.createElement('span');
+        var usernameText = document.createTextNode(username);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
+
+        var textElement = document.createElement('p');
+        var messageText = document.createTextNode(messageContent);
+        textElement.appendChild(messageText);
+
+        messageElement.appendChild(textElement);
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
         messageInput.value = '';
     }
     event.preventDefault();
 }
-
 
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
@@ -198,24 +204,24 @@ function getAvatarColor(messageSender) {
     var index = Math.abs(hash % colors.length);
     return colors[index];
 }
+
 peerConnection.ondatachannel = function (event) {
     dataChannel = event.channel;
 };
 
 dataChannel.onmessage = function(event) {
-    console.log(event);
-
+    var data = JSON.parse(event.data)
     var messageElement = document.createElement('li');
     messageElement.classList.add('chat-message');
 
     var usernameElement = document.createElement('span');
-    var usernameText = document.createTextNode(event.username);
+    var usernameText = document.createTextNode(data.username);
     usernameElement.appendChild(usernameText);
     messageElement.appendChild(usernameElement);
 
-    if (event.message != null){
+    if (data.message != null){
         var textElement = document.createElement('p');
-        var messageText = document.createTextNode(event.message);
+        var messageText = document.createTextNode(data.message);
         textElement.appendChild(messageText);
 
         messageElement.appendChild(textElement);
@@ -240,7 +246,9 @@ var constraints = {
         width : 1280,
         height : 720,
         facingMode : "user"
-    }
+    },
+
+    audio : true
 };
 
 navigator.mediaDevices.getUserMedia(constraints).
