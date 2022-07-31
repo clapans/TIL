@@ -66,8 +66,8 @@ function onConnected() {
         stompClient.send("/topic/public",
         {},
         JSON.stringify({
-            event : "offer",
-            data : offer,
+            type : "OFFER",
+            content : offer,
             sender : username
         }));
 
@@ -82,8 +82,8 @@ function onConnected() {
             stompClient.send("/topic/public",
             {},
             JSON.stringify({
-                event : "candidate",
-                data : event.candidate,
+                type : "CANDIDATE",
+                content : event.candidate,
                 sender : username
             }));
         }
@@ -109,7 +109,10 @@ function sendMessage(event) {
             type: 'CHAT'
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));*/
-        dataChannel.send(messageContent);
+        dataChannel.send(JSON.stringify({
+            "username" : username,
+            "message" : messageContent
+        }))
         messageInput.value = '';
     }
     event.preventDefault();
@@ -126,11 +129,11 @@ function onMessageReceived(payload) {
         var messageElement = document.createElement('li');
         messageElement.classList.add('event-message');
         message.content = message.sender + ' left!';
-    } else if (message.event === 'offer') {
+    } else if (message.type === 'OFFER') {
         if (message.sender != username){
             peerConnection.setRemoteDescription(new RTCSessionDescription({
-                sdp : message.data.sdp,
-                type : message.data.type
+                sdp : message.content.sdp,
+                type : message.content.type
             }));
             peerConnection.createAnswer(function(answer) {
                 peerConnection.setLocalDescription({
@@ -140,8 +143,8 @@ function onMessageReceived(payload) {
                 stompClient.send('/topic/public',
                 {},
                 JSON.stringify({
-                    event : "answer",
-                    data : answer,
+                    type : "ANSWER",
+                    content : answer,
                     sender : username
                 }));
             }, function(error) {
@@ -153,46 +156,29 @@ function onMessageReceived(payload) {
                     stompClient.send("/topic/public",
                     {},
                     JSON.stringify({
-                        event : "candidate",
-                        data : event.candidate,
+                        type : "CANDIDATE",
+                        content : event.candidate,
                         sender : username
                     }));
                 }
             };
         }
 
-    } else if (message.event === 'candidate') {
+    } else if (message.type === 'CANDIDATE') {
         if (message.sender != username){
             peerConnection.addIceCandidate({
-                candidate : message.data.candidate,
-                sdpMid : message.data.sdpMid,
-                sdpMLineIndex : message.data.sdpMLineIndex
+                candidate : message.content.candidate,
+                sdpMid : message.content.sdpMid,
+                sdpMLineIndex : message.content.sdpMLineIndex
             })
         }
-    } else if (message.event === 'answer') {
-        console.log(message.data)
+    } else if (message.type === 'ANSWER') {
         peerConnection.setRemoteDescription(new RTCSessionDescription({
-            sdp : message.data.sdp,
-            type : message.data.type
+            sdp : message.content.sdp,
+            type : message.content.type
             }));
-    } else {
-        var messageElement = document.createElement('li');
-        messageElement.classList.add('chat-message');
-
-        var avatarElement = document.createElement('i');
-        var avatarText = document.createTextNode(message.sender[0]);
-        avatarElement.appendChild(avatarText);
-        avatarElement.style['background-color'] = getAvatarColor(message.sender);
-
-        messageElement.appendChild(avatarElement);
-
-        var usernameElement = document.createElement('span');
-        var usernameText = document.createTextNode(message.sender);
-        usernameElement.appendChild(usernameText);
-        messageElement.appendChild(usernameElement);
     }
-
-    if (message.content != null){
+    if (message.type === 'JOIN'|| message.type === 'LEAVE'){
         var textElement = document.createElement('p');
         var messageText = document.createTextNode(message.content);
         textElement.appendChild(messageText);
@@ -217,7 +203,26 @@ peerConnection.ondatachannel = function (event) {
 };
 
 dataChannel.onmessage = function(event) {
-    console.log("Message:", event.data);
+    console.log(event);
+
+    var messageElement = document.createElement('li');
+    messageElement.classList.add('chat-message');
+
+    var usernameElement = document.createElement('span');
+    var usernameText = document.createTextNode(event.username);
+    usernameElement.appendChild(usernameText);
+    messageElement.appendChild(usernameElement);
+
+    if (event.message != null){
+        var textElement = document.createElement('p');
+        var messageText = document.createTextNode(event.message);
+        textElement.appendChild(messageText);
+
+        messageElement.appendChild(textElement);
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
 };
 
 peerConnection.addEventListener('connectionstatechange', event => {
@@ -237,6 +242,7 @@ var constraints = {
         facingMode : "user"
     }
 };
+
 navigator.mediaDevices.getUserMedia(constraints).
 then(function(stream) {
     peerConnection.addStream(stream);
