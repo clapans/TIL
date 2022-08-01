@@ -19,7 +19,19 @@ var colors = [
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-var configuration = null;
+const configuration = {
+    iceServers: [
+        {
+            url: 'turn:3.36.76.25:3478',
+            username : 'myuser',
+            credential : 'mypassword'
+        },
+        {
+            url : 'stun:stun.l.google.com:19302'
+        }
+    ]
+}
+
 var peerConnection = new RTCPeerConnection(configuration);
 
 var dataChannel = peerConnection.createDataChannel("dataChannel", { reliable: true });
