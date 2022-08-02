@@ -9,7 +9,8 @@ var messageArea = document.querySelector('#messageArea');
 var candidate = null;
 var stompClient = null;
 var username = null;
-
+var sound = document.getElementById('sound')
+var screen = document.getElementById('screen')
 var videoInput = document.getElementById('videoInput');
 var videoOutput = document.getElementById('videoOutput');
 
@@ -202,38 +203,41 @@ function onMessageReceived(payload) {
     }
 }
 
-function getAvatarColor(messageSender) {
-    var hash = 0;
-    for (var i = 0; i < messageSender.length; i++) {
-        hash = 31 * hash + messageSender.charCodeAt(i);
-    }
-    var index = Math.abs(hash % colors.length);
-    return colors[index];
-}
-
 peerConnection.ondatachannel = function (event) {
     dataChannel = event.channel;
 };
 
 dataChannel.onmessage = function(event) {
-    var data = JSON.parse(event.data)
-    var messageElement = document.createElement('li');
-    messageElement.classList.add('chat-message');
+    if (event.data === '음소거' || event.data === '음소거 해제' || event.data === '비디오 시작' || event.data === '비디오 중지'){
+        if (event.data === '음소거'){
+            videoOutput.setAttribute("muted","true")
+        }else if (event.data === '음소거 해제'){
+            videoOutput.removeAttribute("muted")
+        }else if (event.data === '비디오 시작'){
+            videoOutput.removeAttribute('style')
+        }else {
+            videoOutput.setAttribute("style","display:none")
+        }
+    }else {
+        var data = JSON.parse(event.data)
+        var messageElement = document.createElement('li');
+        messageElement.classList.add('chat-message');
 
-    var usernameElement = document.createElement('span');
-    var usernameText = document.createTextNode(data.username);
-    usernameElement.appendChild(usernameText);
-    messageElement.appendChild(usernameElement);
+        var usernameElement = document.createElement('span');
+        var usernameText = document.createTextNode(data.username);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
 
-    if (data.message != null){
-        var textElement = document.createElement('p');
-        var messageText = document.createTextNode(data.message);
-        textElement.appendChild(messageText);
+        if (data.message != null){
+            var textElement = document.createElement('p');
+            var messageText = document.createTextNode(data.message);
+            textElement.appendChild(messageText);
 
-        messageElement.appendChild(textElement);
+            messageElement.appendChild(textElement);
 
-        messageArea.appendChild(messageElement);
-        messageArea.scrollTop = messageArea.scrollHeight;
+            messageArea.appendChild(messageElement);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
     }
 };
 
@@ -253,6 +257,8 @@ var constraints = {
         height : 720,
         facingMode : "user"
     },
+
+    audio : true,
 };
 
 navigator.mediaDevices.getUserMedia(constraints).
@@ -267,5 +273,30 @@ peerConnection.onaddstream = function(event) {
     videoOutput.srcObject = event.stream;
 };
 
+function muteControl(event){
+    if (sound.innerText === '음소거'){
+        dataChannel.send("음소거")
+        sound.innerText = "음소거 해제"
+    }else {
+        dataChannel.send("음소거 해제")
+        sound.innerText = "음소거"
+    }
+    event.preventDefault();
+}
+
+function screenControl(event){
+    if (screen.innerText === '비디오 중지'){
+        videoInput.setAttribute("style","display:none")
+        dataChannel.send("비디오 중지")
+        screen.innerText = "비디오 시작"
+    }else {
+        videoInput.removeAttribute("style")
+        dataChannel.send("비디오 시작")
+        screen.innerText = "비디오 중지"
+    }
+    event.preventDefault();
+}
+sound.addEventListener('click', muteControl, true)
+screen.addEventListener('click', screenControl, true)
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)

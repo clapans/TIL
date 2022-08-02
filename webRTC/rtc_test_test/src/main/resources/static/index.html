@@ -3,8 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Spring Boot WebSocket Chat Application</title>
-    <link rel="stylesheet" href="/css/main.css" />
+    <title>document</title>
 </head>
 <body>
 
@@ -24,14 +23,10 @@
 
 <div id="chat-page" class="hidden">
     <div class="chat-container">
-        <div class="chat-header">
-            <h2>Spring WebSocket Chat Demo</h2>
-        </div>
         <div class="connecting">
             연결중...
         </div>
         <ul id="messageArea">
-
         </ul>
         <form id="messageForm" name="messageForm">
             <div class="form-group">
@@ -47,10 +42,12 @@
                        ></video>
             </div>
             <div id="videoSmall">
-                <video id="videoInput" autoplay width="240px" height="180px"
+                <video id="videoInput" autoplay width="640px" height="480px" muted="true"
                        ></video>
             </div>
         </div>
+        <button id="sound">음소거</button>
+        <button id="screen">비디오 중지</button>
     </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
