@@ -13,6 +13,7 @@ var sound = document.getElementById('sound')
 var screen = document.getElementById('screen')
 var videoInput = document.getElementById('videoInput');
 var videoOutput = document.getElementById('videoOutput');
+let inboundStream = null;
 
 const configuration = {
     iceServers: [
@@ -208,12 +209,12 @@ peerConnection.ondatachannel = function (event) {
 };
 
 dataChannel.onmessage = function(event) {
-    if (event.data === '음소거' || event.data === '음소거 해제' || event.data === '비디오 시작' || event.data === '비디오 중지'){
+    if (event.data === '비디오 시작' || event.data === '비디오 중지' || event.data === '음소거' || event.data === '음소거 해제'){
         if (event.data === '음소거'){
-            videoOutput.setAttribute("muted","true")
-        }else if (event.data === '음소거 해제'){
-            videoOutput.removeAttribute("muted")
-        }else if (event.data === '비디오 시작'){
+            videoOutput.srcObject.getAudioTracks()[0].enabled = false
+        } else if (event.data === '음소거 해제'){
+            videoOutput.srcObject.getAudioTracks()[0].enabled = true
+        } else if (event.data === '비디오 시작'){
             videoOutput.removeAttribute('style')
         }else {
             videoOutput.setAttribute("style","display:none")
@@ -261,16 +262,27 @@ var constraints = {
     audio : true,
 };
 
-navigator.mediaDevices.getUserMedia(constraints).
-then(function(stream) {
-    peerConnection.addStream(stream);
-    videoInput.srcObject = stream;
-}).catch(function(err) { /* handle the error */ });
+async function openCall() {
+    let inputStream = new MediaStream();
+    videoInput.srcObject = inputStream;
+    const gumStream = await navigator.mediaDevices.getUserMedia(
+                          constraints);
+    for (const track of gumStream.getTracks()) {
+        peerConnection.addTrack(track);
+        inputStream.addTrack(track);
+    }
+}
 
-
-peerConnection.onaddstream = function(event) {
-    console.log(event.stream.getAudioTracks)
-    videoOutput.srcObject = event.stream;
+peerConnection.ontrack = function(event) {
+    if (event.streams && event.streams[0]) {
+        videoOutput.srcObject = event.streams[0];
+    } else {
+        if (!inboundStream) {
+            inboundStream = new MediaStream();
+            videoOutput.srcObject = inboundStream;
+        }
+        inboundStream.addTrack(event.track);
+    }
 };
 
 function muteControl(event){
@@ -300,3 +312,5 @@ sound.addEventListener('click', muteControl, true)
 screen.addEventListener('click', screenControl, true)
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
+
+openCall()
