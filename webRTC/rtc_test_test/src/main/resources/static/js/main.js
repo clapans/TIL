@@ -13,16 +13,10 @@ var username = null;
 var videoInput = document.getElementById('videoInput');
 var videoOutput = document.getElementById('videoOutput');
 
-
-var colors = [
-    '#2196F3', '#32c787', '#00BCD4', '#ff5652',
-    '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
-];
-
 const configuration = {
     iceServers: [
         {
-            url: 'turn:3.36.76.25:3478',
+            url: 'turn:3.34.51.116:3478',
             username : 'myuser',
             credential : 'mypassword'
         },
@@ -259,8 +253,6 @@ var constraints = {
         height : 720,
         facingMode : "user"
     },
-
-    audio : true
 };
 
 navigator.mediaDevices.getUserMedia(constraints).
@@ -271,6 +263,7 @@ then(function(stream) {
 
 
 peerConnection.onaddstream = function(event) {
+    console.log(event.stream.getAudioTracks)
     videoOutput.srcObject = event.stream;
 };
 
