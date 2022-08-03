@@ -14,7 +14,9 @@ var sound = document.getElementById('sound')
 var screen = document.getElementById('screen')
 var videoInput = document.getElementById('videoInput');
 var videoOutput = document.getElementById('videoOutput');
+var script = document.getElementById('userScript');
 let inboundStream = null;
+let scriptButton = document.querySelector('#script')
 
 const configuration = {
     iceServers: [
@@ -138,11 +140,11 @@ function onMessageReceived(payload) {
     if(message.type === 'JOIN') {
         var messageElement = document.createElement('li');
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' joined!';
+        message.content = message.sender + ' 님이 입장하셨습니다.';
     } else if (message.type === 'LEAVE') {
         var messageElement = document.createElement('li');
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' left!';
+        message.content = message.sender + ' 님이 퇴장하셨습니다.';
     } else if (message.type === 'OFFER') {
         if (message.sender != username){
             peerConnection.setRemoteDescription(new RTCSessionDescription({
@@ -209,14 +211,30 @@ peerConnection.ondatachannel = function (event) {
 };
 
 dataChannel.onmessage = function(event) {
-    if (event.data === '비디오 시작' || event.data === '비디오 중지' || event.data === '음소거' || event.data === '음소거 해제'){
+    if (event.data === '비디오 시작' || event.data === '비디오 중지'
+    || event.data === '음소거' || event.data === '음소거 해제'
+    || event.data === '스크립트 시작' || event.data === '스크립트 중지'){
         if (event.data === '음소거'){
             videoOutput.srcObject.getAudioTracks()[0].enabled = false
         } else if (event.data === '음소거 해제'){
             videoOutput.srcObject.getAudioTracks()[0].enabled = true
         } else if (event.data === '비디오 시작'){
             videoOutput.removeAttribute('style')
-        }else {
+        } else if (event.data === '스크립트 시작'){
+            script.removeAttribute("style")
+            scriptButton.innerText = "Script OFF"
+            videoInput.classList.remove("col-8")
+            videoInput.classList.add("col-6")
+            videoOutput.classList.remove("col-8")
+            videoOutput.classList.add("col-6")
+        } else if (event.data === '스크립트 중지'){
+            script.setAttribute("style", "display : none")
+            scriptButton.innerText = "Script ON"
+            videoInput.classList.remove("col-6")
+            videoInput.classList.add("col-8")
+            videoOutput.classList.remove("col-6")
+            videoOutput.classList.add("col-8")
+        } else {
             videoOutput.setAttribute("style","display:none")
         }
     }else {
@@ -302,15 +320,38 @@ function screenControl(event){
         dataChannel.send("비디오 중지")
         screen.innerText = "비디오 시작"
     }else {
-        videoInput.removeAttribute("style")
+        videoInput.setAttribute("style","display:inline")
         dataChannel.send("비디오 시작")
         screen.innerText = "비디오 중지"
     }
     event.preventDefault();
 }
+
+function scriptControl(event){
+    if (scriptButton.innerText === 'Script ON'){
+        dataChannel.send("스크립트 시작")
+        script.removeAttribute("style")
+        videoInput.classList.remove("col-8")
+        videoInput.classList.add("col-6")
+        videoOutput.classList.remove("col-8")
+        videoOutput.classList.add("col-6")
+        scriptButton.innerText = "Script OFF"
+    }else {
+        script.setAttribute("style","display : none")
+        dataChannel.send("스크립트 중지")
+        videoInput.classList.remove("col-6")
+        videoInput.classList.add("col-8")
+        videoOutput.classList.remove("col-6")
+        videoOutput.classList.add("col-8")
+        scriptButton.innerText = "Script ON"
+    }
+    event.preventDefault();
+    }
+
 sound.addEventListener('click', muteControl, true)
 screen.addEventListener('click', screenControl, true)
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
+scriptButton.addEventListener('click', scriptControl, true)
 
 openCall()
