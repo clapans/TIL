@@ -9,6 +9,7 @@ var messageArea = document.querySelector('#messageArea');
 var candidate = null;
 var stompClient = null;
 var username = null;
+var room = null;
 var sound = document.getElementById('sound')
 var screen = document.getElementById('screen')
 var videoInput = document.getElementById('videoInput');
@@ -41,7 +42,7 @@ dataChannel.onclose = function() {
 
 function connect(event) {
     username = document.querySelector('#name').value.trim();
-
+    room = document.querySelector('#room').value.trim();
     if(username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
@@ -54,15 +55,14 @@ function connect(event) {
     event.preventDefault();
 }
 
-
 function onConnected() {
     // Subscribe to the Public Topic
-    stompClient.subscribe('/topic/public', onMessageReceived);
+    stompClient.subscribe('/topic/public/' + room, onMessageReceived);
 
     // Tell your username to the server
     stompClient.send("/app/chat.addUser",
         {},
-        JSON.stringify({sender: username, type: 'JOIN'})
+        JSON.stringify({sender: username, type: 'JOIN', content: room})
     )
 
     peerConnection.createOffer(function(offer) {
@@ -70,7 +70,7 @@ function onConnected() {
                     sdp : offer.sdp,
                     type : offer.type
                 }));
-        stompClient.send("/topic/public",
+        stompClient.send('/topic/public/' + room,
         {},
         JSON.stringify({
             type : "OFFER",
@@ -86,7 +86,7 @@ function onConnected() {
 
     peerConnection.onicecandidate = function(event) {
         if (event.candidate) {
-            stompClient.send("/topic/public",
+            stompClient.send('/topic/public/' + room,
             {},
             JSON.stringify({
                 type : "CANDIDATE",
@@ -154,7 +154,7 @@ function onMessageReceived(payload) {
                     sdp : answer.sdp,
                     type : answer.type
                     });
-                stompClient.send('/topic/public',
+                stompClient.send('/topic/public/' + room,
                 {},
                 JSON.stringify({
                     type : "ANSWER",
@@ -167,7 +167,7 @@ function onMessageReceived(payload) {
 
             peerConnection.onicecandidate = function(event) {
                 if (event.candidate) {
-                    stompClient.send("/topic/public",
+                    stompClient.send('/topic/public/' + room,
                     {},
                     JSON.stringify({
                         type : "CANDIDATE",
