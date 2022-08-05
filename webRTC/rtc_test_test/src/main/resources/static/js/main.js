@@ -15,6 +15,7 @@ var screen = document.getElementById('screen')
 var videoInput = document.getElementById('videoInput');
 var videoOutput = document.getElementById('videoOutput');
 var script = document.getElementById('userScript');
+let role = null;
 let inboundStream = null;
 let scriptButton = document.querySelector('#script')
 
@@ -45,11 +46,16 @@ dataChannel.onclose = function() {
 function connect(event) {
     username = document.querySelector('#name').value.trim();
     room = document.querySelector('#room').value.trim();
+    role = document.querySelector('#role').value.trim();
+    if (role === '강사') {
+        scriptButton.removeAttribute("style")
+    }
     if(username) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
         var socket = new SockJS('/ws');
+        console.log(socket)
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, onConnected, onError);
@@ -207,7 +213,9 @@ function onMessageReceived(payload) {
 }
 
 peerConnection.ondatachannel = function (event) {
+    console.log(dataChannel)
     dataChannel = event.channel;
+    console.log(dataChannel)
 };
 
 dataChannel.onmessage = function(event) {

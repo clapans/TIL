@@ -10,14 +10,14 @@
 
 <div id="username-page">
     <div class="username-page-container">
-        <h1 class="title">username을 입력하세요</h1>
         <form id="usernameForm" name="usernameForm">
             <div class="form-group">
-                <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control" />
-                <input type="text" id="room">
+                <input type="text" id="name" placeholder="Username" autocomplete="off" class="form-control my-1" />
+                <input type="text" id="room" placeholder="Roomname" autocomplete="off" class="form-control my-1">
+                <input type="text" id="role" placeholder="Role" autocomplete="off" class="form-control my-1">
             </div>
             <div class="form-group">
-                <button type="submit" class="accent username-submit">채팅 시작하기</button>
+                <button type="submit" class="accent username-submit my-1">채팅 시작하기</button>
             </div>
         </form>
     </div>
@@ -39,7 +39,7 @@
             </div>
             <div>
                 <div>
-                    <button id="script">Script ON</button>
+                    <button id="script" style="display : none">Script ON</button>
                 </div>
                 <button id="sound">음소거</button>
                 <button id="screen">비디오 중지</button>
