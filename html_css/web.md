@@ -6,7 +6,7 @@
 
 Hyper Text Markup Language
 
-Hyper Link를 통해 텍스트를 이동한다.
+HyperLink를 통해 텍스트를 이동한다.
 
 
 
