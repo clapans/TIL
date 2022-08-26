@@ -1,104 +1,85 @@
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
-class Fish{
-  int dir;
-  int[] pos;
-  public Fish(int[] pos, int dir){
-    this.dir = dir;
-    this.pos = pos;
-  }
+class Fish {
+	int num,dir;
+	String role;
+	
+	public Fish(int num, int dir, String role){
+		this.num = num;
+		this.dir = dir;
+		this.role = role;
+	}
+
 }
 
-public class Main{
-  static int[][] arr = new int[4][4];
-  static Fish[] num_arr = new Fish[16];
-  static int res;
-  static Fish shark;
-  static int[] dx = {-1,-1,0,1,1,1,0,-1};
-  static int[] dy = {0,-1,-1,-1,0,1,1,1};
-  public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
-    for (int i = 0; i < 4; i++){
-      for (int j = 0; j < 4; j++){
-        int num = sc.nextInt();
-        int dir = sc.nextInt();
-        arr[i][j] = num;
-        num_arr[num-1] = new Fish(new int[] {i,j}, dir);
-      }
-    }
-    res += arr[0][0];
-    shark = new Fish(new int[] {0,0}, num_arr[arr[0][0]].dir);
-    remove(0,0);
-    dfs(shark,0);
-    System.out.println(res);
-    sc.close();
-  }
+class Point {
+	int x,y;
+	
+	public Point(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+}
 
-  static void remove(int x, int y){
-    num_arr[arr[x][y]].pos = new int[] {-1,-1};
-    num_arr[arr[x][y]].dir = -1; 
-  }
-
-  static void move(Fish fish){
-    int[] pos = fish.pos;
-    while (true){
-      int nx = pos[0] + dx[fish.dir];
-      int ny = pos[1] + dy[fish.dir];
-      if (0 <= nx && nx < 4 && 0 <= ny && ny < 4 && (shark.pos[0] != pos[0] || shark.pos[1] != pos[1])){
-        fish.pos = new int[] {nx,ny};
-        num_arr[arr[nx][ny]].pos = pos;
-        break;
-      }
-      if (fish.dir < 7){
-        fish.dir += 1;
-      }
-      else{
-        fish.dir = 0;
-      }
-    }
-  }
-
-  static ArrayList<Fish> find_fish(int[] pos, int dir){
-    ArrayList<Fish> lst = new ArrayList<>();
-    int cnt = 1;
-    pos[0] += dx[cnt];
-    pos[1] += dy[cnt];
-    while (0 <= pos[0] && pos[0] < 4 && 0 <= pos[1] && pos[1] < 4){
-      Fish tmp = num_arr[arr[pos[0]][pos[1]]];
-      if (tmp.dir != -1){
-        lst.add(tmp);
-      }
-    }
-    return lst;
-  }
-
-  static void dfs(Fish shark, int part_sum){
-    ArrayList<Fish> fishes = new ArrayList<>();
-    Fish[] move_save = new Fish[16]; 
-    for (int i = 0; i < 16; i++){
-        move_save[i] = new Fish(num_arr[i].pos, num_arr[i].dir);
-    }
-    for (int i = 0; i < 16; i++){
-      if (num_arr[i].dir != -1){
-        move(num_arr[i]);
-      }
-    }
-    fishes = find_fish(shark.pos, shark.dir);
-    if (!fishes.isEmpty()){
-      for (Fish fish : fishes){
-        part_sum += arr[fish.pos[0]][fish.pos[1]];
-        remove(fish.pos[0],fish.pos[1]);
-        dfs(fish,part_sum);
-        num_arr[arr[fish.pos[0]][fish.pos[1]]] = new Fish(shark.pos, shark.dir);
-        part_sum -= arr[fish.pos[0]][fish.pos[1]];
-      }
-      for (int i = 0;i < 16; i++){
-        num_arr[i] = new Fish(move_save[i].pos, move_save[i].dir);
-      }
-    }
-    else{
-      res = Math.max(res,part_sum);
-    }
-  }
+public class Main {
+	static Fish[][] fishArr = new Fish[4][4];
+	static Map<Integer,Point> fishMap = new HashMap<>();
+	static int[] dx = {-1,-1,0,1,1,1,0,-1};
+	static int[] dy = {0,-1,-1,-1,0,1,1,1};
+	
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++) 
+				fishArr[i][j] = new Fish(sc.nextInt(),sc.nextInt(),"fish");
+		fishArr[0][0].role = "shark";
+		
+		sc.close();
+	}
+	
+	static void fillMap() {
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 4; j++)
+				fishMap.put(fishArr[i][j].num,new Point(i,j));
+	}
+	
+	static void moveOrder() {
+		for (int i = 1; i < 16; i++) {
+			move(i);
+		}
+	}
+	
+	static Fish move(int num) {
+		Point point = fishMap.get(num);
+		Fish fish = fishArr[point.x][point.y];
+		int dir = fish.dir;
+		int cnt = 0;
+		int nx,ny;
+		while (true) {
+			nx = point.x + dx[dir];
+			ny = point.y + dy[dir];
+			if (cnt == 8) break;
+			if (!(0 <= nx && nx < 4 && 0 <= ny && ny < 4) && fishArr[nx][ny].role == "shark") {
+				dir++;
+				cnt++;
+			}
+			else break;
+		}
+		if (fishArr[nx][ny].num != -1) change(num,fishArr[nx][ny].num);
+		return fish;
+	}
+	
+	static void change(int f1, int f2) {
+		Point p1 = fishMap.get(f1);
+		Point p2 = fishMap.get(f2);
+		int tmp = fishArr[p2.x][p2.y].dir;
+		fishArr[p1.x][p1.y].num = f2;
+		fishArr[p2.x][p2.y].num = f1;
+		fishArr[p2.x][p2.y].dir = fishArr[p1.x][p1.y].dir;
+		fishArr[p1.x][p1.y].dir = tmp;
+	}
 }
