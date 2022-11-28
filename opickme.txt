@@ -1,0 +1,45 @@
+Backend`Spring boot`Gradle`Spring JPA`Spring Security`MySQL`Frontend`Vue.js`Vuex`HTML5`CSS3`Bootstrap4`공통`WebRTC`WebSocket`Google Speech To Text`CI/CD`AWS EC2`AWS S3`Nginx
+
+- WebSocket/ WebRTC
+  => Web API와 Web Socket을 기반한 1대1 화상 채팅으로 실시간성 보장 및 웹 상에서 가벼운 WebRTC 동작이 가능합니다.
+  => Signaling Server는 Spring Boot를 활용하여 SockJS와 StompJS 라이브러리를 활용합니다.
+- Spring Security/ JWT Authentication
+  => 사용자의 간편 로그인과 보안을 위해 Spring Security를 통해 사용자 정보를 암호화 합니다.
+- JPA
+  => 빠른 개발을 위해 JPA를 통해 데이터를 조작합니다.
+- REST API
+  => Server와 Frontend와의 효율적인 협업을 위해 REST API방식으로 통신합니다.
+- S3
+=> 효과적인 오디오 파일 저장을 위해 S3 저장소를 사용합니다.
+
+
+ - 회원 관리 (회원가입, 로그인)
+ - 화상 채팅을 통한 1대1 강사 피드백 (비디오/ 마이크 On/Off, 스크립트 표시 및 수정)
+ - STT를 활용한 스크립트 자동 생성
+ - 손쉬운 나만의 스크립트 관리
+
+ - API 서버 구축 및 서비스에 적합한 ERD 설계
+ - WebSocket 서버 구축
+ - WebAPIs를 이용한 WebRTC 구현
+
+온라인 OPIc 학습 사이트로 불필요한 스크립트 작업을 제거하고 
+WebRTC를 이용한 1대1 상담으로 빠른 피드백을 통한
+높은 학습 기대효과를 가진 웹 사이트입니다.
+
+- AWS EC2를 서버로 사용하면서 IaaS 서비스 경험과 CI/CD 구축 경험
+ - Jira,Gitlab과 같은 협업 툴과 Figma,ERD Cloud와 같은 기획 툴 사용 경험
+ - WebRTC를 WebAPI를 활용해 구축함으로서 서버의 부하 부담이 적은 화상채팅 서비스를 구현
+
+
+
+ - WebSocket/ WebRTC
+   => Web API와 Web Socket을 기반한 1대1 화상 채팅으로 실시간성 보장 및 웹 상에서 가벼운 WebRTC 동작이 가능합니다.
+   => Signaling Server는 Spring Boot를 활용하여 SockJS와 StompJS 라이브러리를 활용합니다.
+ - Spring Security/ JWT Authentication
+   => 사용자의 간편 로그인과 보안을 위해 Spring Security를 통해 사용자 정보를 암호화 합니다.
+ - JPA
+   => 빠른 개발을 위해 JPA를 통해 데이터를 조작합니다.
+ - REST API
+   => Server와 Frontend와의 효율적인 협업을 위해 REST API방식으로 통신합니다.
+ - S3
+ => 효과적인 오디오 파일 저장을 위해 S3 저장소를 사용합니다.
