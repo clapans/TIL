@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 
 @Data
@@ -35,4 +36,5 @@ public class Member {
 
     @CreationTimestamp
     private Timestamp createDate;
+
 }

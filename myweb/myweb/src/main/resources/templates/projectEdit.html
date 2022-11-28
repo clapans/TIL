@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <div class="row justify-content-between my-2 mx-3">
+      <div class="row justify-content-end" id="editorMenu">
+        <select class="col-2 mx-1" id="fontSize">
+          <option value="">크기</option>
+          <option value="1">10px</option>
+          <option value="2">13px</option>
+          <option value="3">16px</option>
+          <option value="4">18px</option>
+          <option value="5">24px</option>
+          <option value="6">32px</option>
+          <option value="7">48px</option>
+        </select>
+        <select class="col-2 mx-1" id="fontColor">
+          <option value="">색상</option>
+          <option value="#000000">검정</option>
+          <option value="#FFFFFF">흰색</option>
+          <option value="#CCCCCC">회색</option>
+          <option value="#F03E3E">빨강</option>
+          <option value="#1971C2">파랑</option>
+          <option value="#37B24D">녹색</option>
+        </select>
+        <select class="col-2 mx-1" id="fontBackground">
+          <option value="rgba(0, 0, 0, 0)">배경</option>
+          <option value="#000000">검정</option>
+          <option value="#FFFFFF">흰색</option>
+          <option value="#CCCCCC">회색</option>
+          <option value="#F03E3E">빨강</option>
+          <option value="#1971C2">파랑</option>
+          <option value="#37B24D">녹색</option>
+        </select>
+        <button class="col-2 ms-1" id="btnBold" style="border-radius : 10px">
+          <b>굵게</b>
+        </button>
+      </div>
+    </div>
+  </div>
+  <select id="where">
+    <option value="">크기</option>
+    <option value="제목">제목</option>
+    <option value="기간">기간</option>
+    <option value="인원">인원</option>
+    <option value="소개">소개</option>
+    <option value="담당역할">담당역할</option>
+    <option value="주요기능">주요기능</option>
+    <option value="구현과정">구현과정</option>
+    <option value="배운점">배운점</option>
+  </select>
+  <button id="apply">적용</button>
+  <div id="script" contenteditable="true">
+
+  </div>
+  <div>제목</div>
+  <div id="제목" th:text="${project.title}" ></div>
+  <div>기간</div>
+  <div id="기간" th:text="${project.period}" ></div>
+  <div>인원</div>
+  <div id="인원" th:text="${project.personnel}" ></div>
+  <div>소개</div>
+  <div id="소개" th:text="${project.introduce}" ></div>
+  <div>담당역할</div>
+  <div id="담당역할" th:text="${project.role}" ></div>
+  <div>주요기능</div>
+  <div id="주요기능" th:text="${project.mainFunction}" ></div>
+  <div>개발환경</div>
+  <div id="개발환경" th:text="${project.environment}" contenteditable="true"></div>
+  <div>구현과정</div>
+  <div id="구현과정" th:text="${project.process}" ></div>
+  <div>배운점</div>
+  <div id="배운점" th:text="${project.learned}" ></div>
+  <div th:text="${id}" id="check" class="d-none"></div>
+  <button id="submit">제출</button>
+  <script>
+    const fontSizeSelector = document.querySelector('#fontSize')
+    const selectFontColor = document.querySelector('#fontColor')
+    const selectFontBackground = document.querySelector('#fontBackground')
+    let btnBold = document.querySelector('#btnBold')
+    let script = document.querySelector('#script')
+
+    selectFontColor.addEventListener('change', function () {
+        setFontColor(this.value);
+    });
+
+    selectFontBackground.addEventListener('change', function () {
+        setFontBackground(this.value);
+    });
+
+    function setFontColor(color) {
+        document.execCommand('foreColor', false, color);
+        focusEditor();
+    }
+
+    function setFontBackground(color) {
+        document.execCommand('hiliteColor', false, color);
+        focusEditor();
+    }
+
+    fontSizeSelector.addEventListener('change', function () {
+        changeFontSize(this.value);
+    });
+
+    function changeFontSize(size) {
+        document.execCommand('fontSize', false, size);
+        focusEditor();
+    }
+
+    function setStyle(style) {
+        document.execCommand(style);
+        focusEditor();
+        checkStyle();
+    }
+
+    function checkStyle() {
+        if (isStyle('bold')) {
+            btnBold.classList.add('active');
+        } else {
+            btnBold.classList.remove('active');
+        }
+    }
+
+    function isStyle(style) {
+        return document.queryCommandState(style);
+    }
+
+    function focusEditor() {
+        script.focus({preventScroll: true});
+    }
+
+    script.addEventListener('keydown', function () {
+        checkStyle();
+    });
+
+    script.addEventListener('mousedown', function () {
+        checkStyle();
+    });
+
+    btnBold.addEventListener('click', function () {
+        setStyle('bold');
+    });
+
+    document.querySelector('#apply').addEventListener('click',() => {
+      document.querySelector('#' + document.querySelector('#where').value).innerHTML = document.querySelector('#script').innerHTML
+    })
+    document.querySelector('#submit').addEventListener('click',() => {
+      let lst = document.querySelector('#개발환경').innerText.trim().split('`')
+      console.log({
+          title : document.querySelector('#제목').innerHTML.length,
+          period : document.querySelector('#기간').innerHTML.length,
+          personnel : document.querySelector('#인원').innerHTML.length,
+          introduce : document.querySelector('#소개').innerHTML.length,
+          role : document.querySelector('#담당역할').innerHTML.length,
+          process : document.querySelector('#구현과정').innerHTML.length,
+          mainFunction : document.querySelector('#주요기능').innerHTML.length,
+          learned : document.querySelector('#배운점').innerHTML.length,
+          environment : lst
+      })
+
+      if (document.querySelector('#check').innerText === '0') {
+        axios.post('http://localhost:5000/project', {
+          title : document.querySelector('#제목').innerHTML,
+          period : document.querySelector('#기간').innerHTML,
+          personnel : document.querySelector('#인원').innerHTML,
+          introduce : document.querySelector('#소개').innerHTML,
+          role : document.querySelector('#담당역할').innerHTML,
+          process : document.querySelector('#구현과정').innerHTML,
+          mainFunction : document.querySelector('#주요기능').innerHTML,
+          learned : document.querySelector('#배운점').innerHTML,
+          environment : lst
+        }).then(res => {
+        })
+      } else {
+        axios.put('http://localhost:5000/project/' + document.querySelector('#check').innerText, {
+          title : document.querySelector('#제목').innerHTML,
+          period : document.querySelector('#기간').innerHTML,
+          personnel : document.querySelector('#인원').innerHTML,
+          introduce : document.querySelector('#소개').innerHTML,
+          role : document.querySelector('#담당역할').innerHTML,
+          process : document.querySelector('#구현과정').innerHTML,
+          mainFunction : document.querySelector('#주요기능').innerHTML,
+          learned : document.querySelector('#배운점').innerHTML,
+          environment : lst
+        }).then(res => {
+        })
+      }
+    })
+  </script>
+</body>
+</html>
