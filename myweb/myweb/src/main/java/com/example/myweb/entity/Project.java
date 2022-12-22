@@ -36,6 +36,10 @@ public class Project extends BaseEntity{
     @OneToMany(mappedBy = "project")
     private List<Environment> environment;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "project")
+    private List<Images> images;
+
     public Project(String title, String period, String personnel, String introduce, String role, String process, String mainFunction, String learned) {
         this.title = title;
         this.period = period;

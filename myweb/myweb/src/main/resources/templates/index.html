@@ -165,10 +165,10 @@
             </div>
         </div>
         <h1 style="text-align : center; margin-top : 60px; margin-bottom : 60px; font-weight: 900">PROJECTS</h1>
-        <div class="row" style="width: 80%">
-            <div th:each="project : ${projectList}" class="card col-3 mx-3" style="width: 18rem;">
+        <div class="row justify-content-center mx-auto" style="width: 80%; margin-bottom : 50px">
+            <div th:each="project : ${projectList}" class="card col-3 mx-3" style="width: 18rem; padding : 0px">
                 <a th:id="${project.id}" th:href="@{'/project/' + ${project.id}}">
-                    <img th:src="${project.image}" class="card-img-top" alt="..." style="width: 100% !important">
+                    <img th:src="${project.image}" class="card-img-top" alt="..." style="width: 100% !important; border-radius : 20px 20px 0px 0px; height: 157px">
                     <div class="card-body">
                         <h4 class="card-title" style="text-align : center"></h4>
                     </div>
