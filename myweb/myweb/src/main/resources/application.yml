@@ -2,7 +2,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: adminByPark
-    url: jdbc:mysql://awseb-e-awqm4pkkpp-stack-awsebrdsdatabase-2mpcedy7gvrk.ccnq0f99q9sx.ap-northeast-2.rds.amazonaws.com/mydata?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://awseb-e-qahr3mpghb-stack-awsebrdsdatabase-cpfjiwkrnokf.ccnq0f99q9sx.ap-northeast-2.rds.amazonaws.com/mydata?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     password: as1df23kdn3v1l
   jpa:
     properties:
